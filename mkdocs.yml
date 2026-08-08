@@ -1,0 +1,21 @@
+site_name: OHADA MCP Documentation
+site_description: Independent MCP infrastructure for structured OHADA legal information
+site_author: Christ Chad
+repo_name: ohada-mcp
+theme:
+  name: material
+  language: fr
+  features:
+    - navigation.instant
+    - navigation.sections
+    - content.code.copy
+nav:
+  - Accueil: index.md
+  - Connexion: quickstart.md
+  - Outils MCP: tools.md
+  - Confidentialité: privacy.md
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences

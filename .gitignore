@@ -1,0 +1,36 @@
+# Private corpus and generated databases
+*.sqlite
+*.sqlite-*
+*.db
+private/
+data/
+
+# Deployment state and local configuration
+.env
+# Production infrastructure is maintained in a separate private repository.
+terraform/
+*.tfvars
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+dist/
+build/
+site/
+*.egg-info/
+
+# Evaluation and editor artefacts
+.deepeval/
+.DS_Store
+.idea/
+.vscode/
+
+# Private demonstration client
+app_demo.py
+scripts/evaluate_demo_question.py

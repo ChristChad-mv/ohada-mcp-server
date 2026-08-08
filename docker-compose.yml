@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  ohada-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - MCP_PATH=/mcp
+      - OHADA_DB_PATH=/data/ohada_corpus.sqlite
+      - ENABLE_DNS_REBINDING_PROTECTION=true
+      - ALLOWED_HOSTS=localhost:*,127.0.0.1:*
+      - ALLOWED_ORIGINS=http://localhost:*,http://127.0.0.1:*
+    volumes:
+      - ../ohada_corpus.sqlite:/data/ohada_corpus.sqlite:ro
+    restart: unless-stopped

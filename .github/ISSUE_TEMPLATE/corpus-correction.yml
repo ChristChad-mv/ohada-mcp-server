@@ -1,0 +1,32 @@
+name: Corpus correction
+description: Report a discrepancy against an official OHADA publication
+title: "[Corpus]: "
+labels: [corpus]
+body:
+  - type: input
+    id: act
+    attributes:
+      label: Legal text code
+      placeholder: AUSCGIE
+    validations:
+      required: true
+  - type: input
+    id: article
+    attributes:
+      label: Article or provision reference
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source URL
+    validations:
+      required: true
+  - type: textarea
+    id: discrepancy
+    attributes:
+      label: Observed discrepancy
+      description: Use the shortest excerpt necessary; do not paste an entire publication.
+    validations:
+      required: true
+

@@ -1,0 +1,32 @@
+[project]
+name = "ohada-mcp"
+version = "1.0.0"
+description = "OHADA MCP — Independent Open Legal Infrastructure for OHADA Law"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.28.1,<2.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "httpx>=0.25.0",
+]
+
+[project.scripts]
+ohada-mcp = "ohada_mcp.server:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.3.0",
+]
+docs = [
+    "mkdocs-material>=9.5.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
