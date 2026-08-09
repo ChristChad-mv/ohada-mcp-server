@@ -1,39 +1,41 @@
-# Contributing to OHADA MCP
+# Contribuer à OHADA MCP
 
-Thank you for helping make OHADA legal information easier to use responsibly.
+Merci de contribuer à rendre l'information juridique OHADA plus accessible et plus fiable.
 
-## Suitable contributions
+## Contributions bienvenues
 
-- server reliability and MCP interoperability;
-- schemas, validation and error handling;
-- documentation and integration examples;
-- test coverage;
-- accessibility and French-language corrections;
-- reproducible corpus-error reports with an official source URL.
+- fiabilité du serveur et interopérabilité MCP ;
+- schémas, validation et gestion des erreurs ;
+- documentation et exemples d'intégration ;
+- couverture de tests ;
+- accessibilité et corrections linguistiques ;
+- signalements reproductibles d'erreurs de corpus accompagnés d'une source officielle.
 
-The private production corpus, embeddings and ingestion operations are not maintained in this repository.
+Les bases de production et les opérations d'ingestion ne font pas partie du périmètre de ce dépôt public.
 
-## Development setup
+## Environnement de développement
+
+Installez [`uv`](https://docs.astral.sh/uv/getting-started/installation/), puis exécutez :
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-pytest -q
-ruff check src tests
+uv sync --locked --extra dev --extra docs
+uv run pytest -q
+uv run ruff check src tests scripts
+uv run mkdocs build --strict
 ```
 
-Tests use a temporary fixture corpus and must not depend on a production database.
+Les tests créent un corpus temporaire minimal et ne doivent jamais dépendre d'une base de production.
 
 ## Pull requests
 
-Keep changes focused, add tests for behavior changes, and update documentation when a public contract changes. Do not commit generated databases, source PDFs, credentials, Terraform state, model weights, user queries, or client documents.
+Créez une branche dédiée et gardez chaque changement ciblé. Ajoutez des tests lorsqu'un comportement change et mettez la documentation à jour lorsqu'un contrat public évolue. Les checks CI doivent être verts avant la fusion ; l'historique de `master` utilise le squash merge.
 
-## Corpus corrections
+Ne commitez jamais de base générée, PDF source, identifiant, état Terraform, poids de modèle, requête utilisateur ou document client.
 
-Include the legal-text code, article reference, observed text, expected text, official publication URL, and publication date. Do not paste an entire publication when a short reproducible excerpt is sufficient.
+## Corrections du corpus
 
-## Responsible communication
+Indiquez le code du texte, la référence de l'article, le texte observé, le texte attendu, l'URL de la publication officielle et sa date. Un court extrait reproductible suffit ; ne recopiez pas une publication entière.
 
-Do not describe the project as an official OHADA service. Do not submit personal or confidential legal data. Security vulnerabilities should follow `SECURITY.md`, not a public issue.
+## Communication responsable
 
+Ne présentez pas le projet comme un service officiel de l'OHADA et ne transmettez aucune donnée juridique personnelle ou confidentielle. Signalez les vulnérabilités en suivant [`SECURITY.md`](SECURITY.md), jamais dans une issue publique.

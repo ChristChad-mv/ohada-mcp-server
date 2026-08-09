@@ -6,6 +6,7 @@ import json
 import sqlite3
 
 import pytest
+
 from ohada_mcp import legal_api
 from ohada_mcp.models import CitationVerificationResult, LegalArticle, SearchResults
 

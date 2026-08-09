@@ -3,6 +3,7 @@ Integration Tests for OHADA MCPServer (SDK v2).
 """
 
 import pytest
+
 from ohada_mcp.models import LegalArticle
 from ohada_mcp.server import (
     get_act,
