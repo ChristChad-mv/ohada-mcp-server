@@ -17,7 +17,7 @@ The hosted server uses Streamable HTTP over HTTPS. Production deployments must:
 - use rate limiting and cost alerts;
 - avoid logging confidential query content.
 
-The production application disables HTTP access logs and never writes request bodies or question text to logs. Rate limiting uses only a short-lived in-memory digest of network information.
+The application never writes request bodies, tool arguments or question text to its own logs. The hosting infrastructure may retain limited technical metadata such as status codes, latency and network information under the provider's retention policy. Rate limiting uses only a short-lived in-memory digest of network information.
 
 The public endpoint is intentionally anonymous because it exposes public, read-only legal material. If authenticated access is introduced, it must follow the MCP authorization specification and OAuth 2.1 resource/audience validation. Client tokens must never be forwarded to another service.
 

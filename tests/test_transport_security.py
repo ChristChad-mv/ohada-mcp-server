@@ -2,8 +2,9 @@
 
 import pytest
 from mcp.server.transport_security import TransportSecurityMiddleware
-from ohada_mcp.server import transport_security
 from starlette.requests import Request
+
+from ohada_mcp.server import transport_security
 
 
 def _request(*, host: str, origin: str | None = None, content_type: str = "application/json"):

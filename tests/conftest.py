@@ -3,6 +3,7 @@
 import sqlite3
 
 import pytest
+
 from ohada_mcp.accounting_api import syscohada_client
 from ohada_mcp.client import corpus_client
 

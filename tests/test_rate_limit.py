@@ -3,6 +3,7 @@
 import json
 
 import pytest
+
 from ohada_mcp.middleware import PrivacyRateLimitMiddleware, SecurityHeadersMiddleware
 
 

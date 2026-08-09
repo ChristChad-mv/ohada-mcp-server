@@ -44,7 +44,7 @@ Utilisez cette configuration lorsque votre client demande une URL de serveur MCP
 - recherche de dispositions pertinentes ;
 - texte intégral d'un article et de son contexte hiérarchique ;
 - récupération groupée de plusieurs articles ;
-- contrôle d'une citation et de la version indexée.
+- contrôle d'une citation et de la version indexée ;
 - recherche dans le SYSCOHADA et récupération de passages ou comptes complets avec leurs pages.
 
 Le corpus couvre actuellement 13 textes OHADA ainsi que la publication officielle SYSCOHADA. La jurisprudence CCJA et nationale n'est pas encore incluse.
@@ -55,13 +55,14 @@ OHADA MCP ne conserve ni le texte des questions ni les recherches des utilisateu
 
 ## Documentation
 
-La documentation complète sera publiée à l'adresse
+La documentation complète est disponible à l'adresse
 [christchad-mv.github.io/ohada-mcp-server](https://christchad-mv.github.io/ohada-mcp-server/).
 
 - [Démarrage rapide](docs/quickstart.md)
 - [Connexion à Claude](docs/integrations/claude.md)
 - [Référence des outils](docs/tools.md)
-- [Confidentialité et sécurité](docs/privacy.md)
+- [Confidentialité](docs/privacy.md)
+- [Sécurité](docs/security.md)
 
 ## Licence
 

@@ -3,6 +3,7 @@
 import sqlite3
 
 import pytest
+
 from ohada_mcp import accounting_api
 from ohada_mcp.models import (
     SyscohadaAccountContext,

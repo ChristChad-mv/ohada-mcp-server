@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+
 from ohada_mcp.catalog import OHADA_CATALOGUE
 from ohada_mcp.client import CorpusBackendClient
 from ohada_mcp.repositories import RankedChunk, StoredChunk
