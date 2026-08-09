@@ -13,6 +13,7 @@ terraform
 *.tfstate
 *.tfstate.*
 ohada_corpus.sqlite
-private
+private/*
+!private/ohada_corpus.sqlite
+!private/syscohada.sqlite
 data
-

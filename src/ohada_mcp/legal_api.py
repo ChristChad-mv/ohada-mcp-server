@@ -32,6 +32,11 @@ async def search_ohada_law(query: str, max_results: int = 5, act_filter: str | N
         raise ValueError("La requête de recherche ne peut pas être vide.")
     if len(query) > settings.MAX_QUERY_LENGTH:
         raise ValueError(f"La requête dépasse la limite de {settings.MAX_QUERY_LENGTH} caractères.")
+    terms = re.findall(r"\w+", query, flags=re.UNICODE)
+    if not terms:
+        raise ValueError("La requête doit contenir au moins un terme alphanumérique.")
+    if len(terms) > settings.MAX_QUERY_TERMS:
+        raise ValueError(f"La requête dépasse la limite de {settings.MAX_QUERY_TERMS} termes.")
     if not 1 <= max_results <= settings.MAX_SEARCH_RESULTS:
         raise ValueError(f"max_results doit être compris entre 1 et {settings.MAX_SEARCH_RESULTS}.")
     return await corpus_client.search(query=query, limit=max_results, act_filter=act_filter)
@@ -150,4 +155,11 @@ async def get_provision_at_date(act_code: str, article_reference: str, target_da
 
 async def verify_citation(citation_text: str) -> CitationVerificationResult:
     """Verify validity, existence and accuracy of an OHADA legal citation."""
+    citation_text = citation_text.strip()
+    if not citation_text:
+        raise ValueError("La citation ne peut pas être vide.")
+    if len(citation_text) > settings.MAX_CITATION_LENGTH:
+        raise ValueError(
+            f"La citation dépasse la limite de {settings.MAX_CITATION_LENGTH} caractères."
+        )
     return await corpus_client.verify_citation(citation_text=citation_text)

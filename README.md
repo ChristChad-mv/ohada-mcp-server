@@ -2,7 +2,7 @@
 
 Le serveur MCP public de recherche juridique OHADA.
 
-OHADA MCP permet à Claude, Gemini et aux clients compatibles MCP de rechercher les textes OHADA, de récupérer un article complet et de vérifier une citation.
+OHADA MCP permet à Claude, Gemini et aux clients compatibles MCP de rechercher les textes OHADA, de récupérer un article complet, de vérifier une citation et de consulter le SYSCOHADA.
 
 > Projet indépendant créé par Christ Chad. Il n'est pas encore affilié, approuvé ou exploité officiellement par l'OHADA.
 
@@ -45,8 +45,9 @@ Utilisez cette configuration lorsque votre client demande une URL de serveur MCP
 - texte intégral d'un article et de son contexte hiérarchique ;
 - récupération groupée de plusieurs articles ;
 - contrôle d'une citation et de la version indexée.
+- recherche dans le SYSCOHADA et récupération de passages ou comptes complets avec leurs pages.
 
-Le corpus couvre actuellement 13 textes OHADA. La jurisprudence CCJA et nationale n'est pas encore incluse.
+Le corpus couvre actuellement 13 textes OHADA ainsi que la publication officielle SYSCOHADA. La jurisprudence CCJA et nationale n'est pas encore incluse.
 
 ## Confidentialité
 
@@ -54,9 +55,13 @@ OHADA MCP ne conserve ni le texte des questions ni les recherches des utilisateu
 
 ## Documentation
 
-- [Connexion rapide](docs/quickstart.md)
+La documentation complète sera publiée à l'adresse
+[christchad-mv.github.io/ohada-mcp-server](https://christchad-mv.github.io/ohada-mcp-server/).
+
+- [Démarrage rapide](docs/quickstart.md)
+- [Connexion à Claude](docs/integrations/claude.md)
 - [Référence des outils](docs/tools.md)
-- [Confidentialité](docs/privacy.md)
+- [Confidentialité et sécurité](docs/privacy.md)
 
 ## Licence
 

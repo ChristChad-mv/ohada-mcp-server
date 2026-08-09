@@ -135,3 +135,68 @@ class TemporalApplicabilityResult(BaseModel):
     effective_from: str | None = None
     effective_until: str | None = None
     limitation: str = Field(description="Explicit limitation: the service does not reconstruct superseded wording")
+
+
+class SyscohadaSearchResultItem(BaseModel):
+    """Compact discovery result from the official SYSCOHADA publication."""
+
+    rank: int
+    chunk_id: int = Field(description="Stable passage identifier for get_syscohada_passages")
+    hierarchy_path: str
+    snippet: str = Field(description="Short discovery excerpt, not authoritative full context")
+    page_start: int
+    page_end: int
+    class_code: str | None = None
+    class_label: str | None = None
+    account_code: str | None = None
+    account_label: str | None = None
+    account_subsection: str | None = None
+    is_table: bool = False
+
+
+class SyscohadaSearchResults(BaseModel):
+    """Bounded discovery response for SYSCOHADA accounting material."""
+
+    query: str
+    result_count: int
+    account_filter: str | None = None
+    class_filter: str | None = None
+    results: list[SyscohadaSearchResultItem] = Field(default_factory=list)
+
+
+class SyscohadaPassage(BaseModel):
+    """Full SYSCOHADA passage with citation-ready structural metadata."""
+
+    chunk_id: int
+    hierarchy_path: str
+    text: str
+    page_start: int
+    page_end: int
+    class_code: str | None = None
+    class_label: str | None = None
+    account_code: str | None = None
+    account_label: str | None = None
+    account_subsection: str | None = None
+    application_id: str | None = None
+    application_label: str | None = None
+    is_table: bool = False
+    citation: str
+    official_source: OfficialSource
+
+
+class SyscohadaPassageBatch(BaseModel):
+    """Bounded full-text response for exact SYSCOHADA passage identifiers."""
+
+    requested_count: int
+    result_count: int
+    passages: list[SyscohadaPassage] = Field(default_factory=list)
+    missing_chunk_ids: list[int] = Field(default_factory=list)
+
+
+class SyscohadaAccountContext(BaseModel):
+    """All indexed official passages attached to one SYSCOHADA account."""
+
+    account_code: str
+    account_label: str | None = None
+    passage_count: int
+    passages: list[SyscohadaPassage] = Field(default_factory=list)

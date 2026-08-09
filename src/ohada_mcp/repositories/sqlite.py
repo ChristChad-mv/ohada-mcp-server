@@ -18,7 +18,8 @@ class SQLiteCorpusRepository:
     def _connect(self) -> sqlite3.Connection:
         if not self.db_path.is_file():
             raise FileNotFoundError(f"Database OHADA introuvable: {self.db_path}")
-        connection = sqlite3.connect(str(self.db_path))
+        database_uri = f"{self.db_path.resolve().as_uri()}?mode=ro&immutable=1"
+        connection = sqlite3.connect(database_uri, uri=True)
         connection.row_factory = sqlite3.Row
         return connection
 

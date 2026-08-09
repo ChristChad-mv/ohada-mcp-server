@@ -13,9 +13,9 @@ from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 
-from ohada_mcp import legal_api
+from ohada_mcp import accounting_api, legal_api
 from ohada_mcp.config import settings
-from ohada_mcp.middleware import PrivacyRateLimitMiddleware
+from ohada_mcp.middleware import PrivacyRateLimitMiddleware, SecurityHeadersMiddleware
 from ohada_mcp.models import (
     ArticleBatch,
     ArticleLocator,
@@ -24,6 +24,9 @@ from ohada_mcp.models import (
     LegalArticle,
     LegalTextSummary,
     SearchResults,
+    SyscohadaAccountContext,
+    SyscohadaPassageBatch,
+    SyscohadaSearchResults,
     TemporalApplicabilityResult,
 )
 from ohada_mcp.tool_contracts import TOOL_DESCRIPTIONS
@@ -148,6 +151,39 @@ async def verify_citation(citation_text: str, ctx: Context | None = None) -> Cit
     return await legal_api.verify_citation(citation_text=citation_text)
 
 
+@mcp.tool(description=TOOL_DESCRIPTIONS["search_syscohada"], annotations=READ_ONLY_TOOL)
+async def search_syscohada(
+    query: str,
+    max_results: int = 5,
+    account_filter: str | None = None,
+    class_filter: str | None = None,
+    ctx: Context | None = None,
+) -> SyscohadaSearchResults:
+    """Découvre des passages dans la publication officielle SYSCOHADA."""
+    return await accounting_api.search_syscohada(
+        query=query,
+        max_results=max_results,
+        account_filter=account_filter,
+        class_filter=class_filter,
+    )
+
+
+@mcp.tool(description=TOOL_DESCRIPTIONS["get_syscohada_passages"], annotations=READ_ONLY_TOOL)
+async def get_syscohada_passages(
+    chunk_ids: list[int], ctx: Context | None = None
+) -> SyscohadaPassageBatch:
+    """Récupère le texte complet de passages SYSCOHADA exacts."""
+    return await accounting_api.get_syscohada_passages(chunk_ids=chunk_ids)
+
+
+@mcp.tool(description=TOOL_DESCRIPTIONS["get_syscohada_account"], annotations=READ_ONLY_TOOL)
+async def get_syscohada_account(
+    account_code: str, ctx: Context | None = None
+) -> SyscohadaAccountContext:
+    """Récupère tous les passages officiels d'un compte SYSCOHADA exact."""
+    return await accounting_api.get_syscohada_account(account_code=account_code)
+
+
 # ---------------------------------------------------------------------------
 # MCP Resources URIs (RFC 6570)
 # ---------------------------------------------------------------------------
@@ -189,16 +225,19 @@ async def resource_act_versions(code: str) -> dict[str, Any]:
 async def _health_endpoint(request):
     from starlette.responses import JSONResponse
 
+    from ohada_mcp.accounting_api import syscohada_client
     from ohada_mcp.catalog import OHADA_CATALOGUE
     from ohada_mcp.client import corpus_client
 
     corpus_ready = corpus_client.db_path.is_file()
+    syscohada_ready = syscohada_client.db_path.is_file()
     return JSONResponse(
         {
             "status": "healthy" if corpus_ready else "degraded",
             "service": "OHADA Remote MCP Server",
             "mcp_endpoint": settings.MCP_PATH,
             "corpus_ready": corpus_ready,
+            "syscohada_ready": syscohada_ready,
             "texts_count": len(OHADA_CATALOGUE),
             "author": "Christ Chad",
         },
@@ -232,11 +271,14 @@ def main():
         window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
         protected_path=settings.MCP_PATH,
         max_clients=settings.RATE_LIMIT_MAX_CLIENTS,
+        trust_proxy_headers=settings.TRUST_PROXY_HEADERS,
+        trusted_proxy_hops=settings.TRUSTED_PROXY_HOPS,
     )
+    app = SecurityHeadersMiddleware(app)
 
     # Access logs contain paths and network metadata but no request bodies. We
     # disable them for the public service to minimize retained usage data.
-    uvicorn.run(app, host=host, port=port, access_log=False)
+    uvicorn.run(app, host=host, port=port, access_log=False, server_header=False)
 
 
 if __name__ == "__main__":

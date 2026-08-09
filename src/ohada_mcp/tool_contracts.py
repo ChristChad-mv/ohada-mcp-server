@@ -40,6 +40,22 @@ TOOL_DESCRIPTIONS = {
         "référence canonique et son statut, jamais le texte de l'article. Ne pas appeler cet "
         "outil après un get_article ou get_articles réussi pour la même référence."
     ),
+    "search_syscohada": (
+        "Découvre des règles, comptes, états financiers, tableaux et applications dans la "
+        "publication officielle SYSCOHADA. Retourne des extraits courts et des chunk_id. "
+        "Récupérer ensuite les passages retenus avec get_syscohada_passages. Si un numéro de "
+        "compte exact est demandé, utiliser directement get_syscohada_account."
+    ),
+    "get_syscohada_passages": (
+        "Retourne le texte complet de un à cinq passages SYSCOHADA identifiés par les chunk_id "
+        "de search_syscohada, avec compte, classe, pages et citation officielle. Utiliser ces "
+        "passages complets pour toute affirmation comptable finale."
+    ),
+    "get_syscohada_account": (
+        "Retourne en un appel tous les passages officiels indexés pour un numéro de compte "
+        "SYSCOHADA exact, notamment commentaires, fonctionnement et éléments de contrôle. "
+        "À utiliser directement lorsque la question désigne ce compte."
+    ),
 }
 
 
@@ -162,6 +178,63 @@ GEMINI_FUNCTION_DECLARATIONS = [
                 }
             },
             "required": ["citation_text"],
+        },
+    },
+    {
+        "name": "search_syscohada",
+        "description": TOOL_DESCRIPTIONS["search_syscohada"],
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "query": {
+                    "type": "STRING",
+                    "description": "Concept comptable ciblé en français.",
+                },
+                "max_results": {
+                    "type": "INTEGER",
+                    "description": "Nombre de résultats distincts, de 1 à 10 (défaut : 5).",
+                },
+                "account_filter": {
+                    "type": "STRING",
+                    "description": "Code de compte facultatif, par exemple 14, 82 ou 101.",
+                },
+                "class_filter": {
+                    "type": "STRING",
+                    "description": "Code de classe facultatif, par exemple 1 ou 8.",
+                },
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "get_syscohada_passages",
+        "description": TOOL_DESCRIPTIONS["get_syscohada_passages"],
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "chunk_ids": {
+                    "type": "ARRAY",
+                    "description": "Un à cinq chunk_id exacts retournés par search_syscohada.",
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "items": {"type": "INTEGER"},
+                }
+            },
+            "required": ["chunk_ids"],
+        },
+    },
+    {
+        "name": "get_syscohada_account",
+        "description": TOOL_DESCRIPTIONS["get_syscohada_account"],
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "account_code": {
+                    "type": "STRING",
+                    "description": "Numéro de compte SYSCOHADA exact, par exemple 14, 82 ou 101.",
+                }
+            },
+            "required": ["account_code"],
         },
     },
 ]

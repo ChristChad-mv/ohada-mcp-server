@@ -9,10 +9,13 @@ from ohada_mcp.server import (
     get_article,
     get_articles,
     get_provision_at_date,
+    get_syscohada_account,
+    get_syscohada_passages,
     get_version,
     list_legal_texts,
     mcp,
     search_ohada_law,
+    search_syscohada,
     verify_citation,
 )
 
@@ -35,6 +38,9 @@ async def test_mcp_tools_registration():
         get_version,
         get_provision_at_date,
         verify_citation,
+        search_syscohada,
+        get_syscohada_passages,
+        get_syscohada_account,
     ]
     for tool in tools:
         assert callable(tool)
@@ -58,8 +64,10 @@ async def test_mcp_list_texts_tool():
 async def test_mcp_contracts_are_explicit_and_read_only():
     tools = {tool.name: tool for tool in await mcp.list_tools()}
 
-    assert len(tools) == 8
+    assert len(tools) == 11
     assert "extraits courts" in tools["search_ohada_law"].description
     assert "Ne pas appeler" in tools["verify_citation"].description
     assert tools["get_article"].annotations.readOnlyHint is True
     assert tools["get_articles"].annotations.idempotentHint is True
+    assert "extraits courts" in tools["search_syscohada"].description
+    assert tools["get_syscohada_account"].annotations.readOnlyHint is True

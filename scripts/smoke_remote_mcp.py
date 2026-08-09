@@ -28,6 +28,9 @@ async def smoke(url: str) -> None:
             "get_version",
             "get_provision_at_date",
             "verify_citation",
+            "search_syscohada",
+            "get_syscohada_passages",
+            "get_syscohada_account",
         }
         if set(tools) != expected:
             raise RuntimeError(f"Outils inattendus : {sorted(tools)}")
@@ -54,8 +57,18 @@ async def smoke(url: str) -> None:
                 },
             ),
             ("verify_citation", {"citation_text": "Article 326 AUSCGIE"}),
+            (
+                "search_syscohada",
+                {
+                    "query": "capital social apports associés",
+                    "max_results": 2,
+                    "account_filter": "101",
+                },
+            ),
+            ("get_syscohada_account", {"account_code": "101"}),
         ]
         print(f"tools: {len(tools)}")
+        syscohada_chunk_ids: list[int] = []
         for name, arguments in calls:
             started = time.perf_counter()
             result = await session.call_tool(name, arguments)
@@ -85,6 +98,35 @@ async def smoke(url: str) -> None:
                 raise RuntimeError("Batch d'articles incomplet")
             elif name == "verify_citation" and ("matched_article" in structured or "text" in structured):
                 raise RuntimeError("Vérification de citation non compacte")
+            elif name == "search_syscohada":
+                results = structured.get("results", [])
+                if not results or any(item.get("account_code") != "101" for item in results):
+                    raise RuntimeError("Recherche SYSCOHADA filtrée incorrecte")
+                syscohada_chunk_ids = [item["chunk_id"] for item in results]
+            elif name == "get_syscohada_account":
+                if structured.get("account_code") != "101" or structured.get("passage_count") != 6:
+                    raise RuntimeError("Contexte SYSCOHADA du compte 101 incomplet")
+                sources = [item.get("official_source", {}) for item in structured.get("passages", [])]
+                if not sources or any(item.get("effective_from") != "2018-01-01" for item in sources):
+                    raise RuntimeError("Date d'entrée en vigueur SYSCOHADA absente ou incorrecte")
+
+        started = time.perf_counter()
+        passage_result = await session.call_tool(
+            "get_syscohada_passages",
+            {"chunk_ids": syscohada_chunk_ids},
+        )
+        elapsed_ms = (time.perf_counter() - started) * 1_000
+        if passage_result.isError:
+            raise RuntimeError(f"get_syscohada_passages a échoué : {passage_result.content}")
+        passages = passage_result.structuredContent
+        if not isinstance(passages, dict) or passages.get("result_count") != len(
+            syscohada_chunk_ids
+        ):
+            raise RuntimeError("Récupération des passages SYSCOHADA incomplète")
+        print(
+            f"get_syscohada_passages: {elapsed_ms:.1f} ms, "
+            f"{len(json.dumps(passages, ensure_ascii=False))} caractères JSON"
+        )
 
 
 def main() -> None:

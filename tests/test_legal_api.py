@@ -388,8 +388,28 @@ async def test_unknown_act_is_rejected():
 async def test_search_input_limits_are_enforced():
     with pytest.raises(ValueError, match="vide"):
         await legal_api.search_ohada_law("   ")
+    with pytest.raises(ValueError, match="alphanumérique"):
+        await legal_api.search_ohada_law("!?;()")
+    with pytest.raises(ValueError, match="32 termes"):
+        await legal_api.search_ohada_law(" ".join(f"terme{index}" for index in range(33)))
     with pytest.raises(ValueError, match="max_results"):
         await legal_api.search_ohada_law("société", max_results=10_000)
+
+
+@pytest.mark.asyncio
+async def test_citation_input_limits_are_enforced():
+    with pytest.raises(ValueError, match="vide"):
+        await legal_api.verify_citation("   ")
+    with pytest.raises(ValueError, match="500 caractères"):
+        await legal_api.verify_citation("A" * 501)
+
+
+def test_legal_repository_opens_database_read_only():
+    with (
+        legal_api.corpus_client.repository._connect() as connection,
+        pytest.raises(sqlite3.OperationalError, match="readonly database"),
+    ):
+        connection.execute("CREATE TABLE forbidden_write (id INTEGER)")
 
 
 @pytest.mark.asyncio

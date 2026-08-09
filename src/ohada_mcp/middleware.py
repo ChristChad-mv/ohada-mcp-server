@@ -3,19 +3,22 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
+import ipaddress
 import json
+import secrets
 import threading
 import time
 from collections import defaultdict, deque
 from collections.abc import MutableMapping
-from typing import Any
+from typing import Any, ClassVar
 
 
 class PrivacyRateLimitMiddleware:
     """Limit MCP request volume without reading or retaining request bodies.
 
-    Only an ephemeral SHA-256 digest derived from the network address is kept
-    in process memory for the duration of the configured window. It is never
+    Only an ephemeral keyed digest derived from the network address is kept in
+    process memory for the duration of the configured window. It is never
     logged or written to disk. Limits apply per Cloud Run instance, providing
     an initial abuse control until an edge limiter is introduced.
     """
@@ -29,6 +32,8 @@ class PrivacyRateLimitMiddleware:
         window_seconds: int,
         protected_path: str,
         max_clients: int = 10_000,
+        trust_proxy_headers: bool = False,
+        trusted_proxy_hops: int = 1,
     ) -> None:
         self.app = app
         self.enabled = enabled
@@ -36,6 +41,9 @@ class PrivacyRateLimitMiddleware:
         self.window_seconds = window_seconds
         self.protected_path = protected_path.rstrip("/")
         self.max_clients = max_clients
+        self.trust_proxy_headers = trust_proxy_headers
+        self.trusted_proxy_hops = trusted_proxy_hops
+        self._digest_key = secrets.token_bytes(32)
         self._requests: MutableMapping[str, deque[float]] = defaultdict(deque)
         self._lock = threading.Lock()
 
@@ -45,14 +53,24 @@ class PrivacyRateLimitMiddleware:
 
     def _client_digest(self, scope: dict[str, Any]) -> str:
         headers = self._headers(scope)
-        # Google Front Ends append the address they observed to any caller-
-        # supplied X-Forwarded-For value. Never trust the left-most value: a
-        # caller can forge that prefix and otherwise rotate the rate-limit key.
         forwarded_values = [value.strip() for value in headers.get("x-forwarded-for", "").split(",") if value.strip()]
-        forwarded = forwarded_values[-1] if forwarded_values else ""
         client = scope.get("client") or ("unknown", 0)
-        address = forwarded or str(client[0])
-        return hashlib.sha256(address.encode("utf-8")).hexdigest()
+        address = str(client[0])
+
+        # Only use forwarding metadata when the deployment explicitly trusts
+        # its reverse proxy. Google external load balancers append
+        # "client-ip, load-balancer-ip" after any caller-supplied prefix, so
+        # the client is one position before the configured trusted proxy hops.
+        if self.trust_proxy_headers and len(forwarded_values) > self.trusted_proxy_hops:
+            candidate = forwarded_values[-(self.trusted_proxy_hops + 1)]
+            try:
+                address = str(ipaddress.ip_address(candidate))
+            except ValueError:
+                pass
+
+        # A process-random HMAC prevents an ephemeral in-memory identifier
+        # from being reversed through an IPv4 dictionary attack.
+        return hmac.new(self._digest_key, address.encode("utf-8"), hashlib.sha256).hexdigest()
 
     def _allow(self, key: str, now: float) -> tuple[bool, int, int]:
         cutoff = now - self.window_seconds
@@ -126,3 +144,43 @@ class PrivacyRateLimitMiddleware:
             return
 
         await self.app(scope, receive, send)
+
+
+class SecurityHeadersMiddleware:
+    """Apply privacy and browser hardening headers to every HTTP response."""
+
+    _BASE_HEADERS: ClassVar[dict[bytes, bytes]] = {
+        b"cache-control": b"no-store",
+        b"content-security-policy": b"default-src 'none'; frame-ancestors 'none'; base-uri 'none'",
+        b"permissions-policy": b"camera=(), microphone=(), geolocation=()",
+        b"referrer-policy": b"no-referrer",
+        b"x-content-type-options": b"nosniff",
+        b"x-frame-options": b"DENY",
+    }
+
+    def __init__(self, app) -> None:
+        self.app = app
+
+    async def __call__(self, scope, receive, send) -> None:
+        if scope.get("type") != "http":
+            await self.app(scope, receive, send)
+            return
+
+        request_headers = PrivacyRateLimitMiddleware._headers(scope)
+        response_headers = dict(self._BASE_HEADERS)
+        if request_headers.get("x-forwarded-proto", "").lower() == "https":
+            response_headers[b"strict-transport-security"] = b"max-age=31536000; includeSubDomains"
+
+        async def send_with_security_headers(message):
+            if message.get("type") == "http.response.start":
+                protected_names = set(response_headers)
+                headers = [
+                    (name, value)
+                    for name, value in message.get("headers", [])
+                    if name.lower() not in protected_names
+                ]
+                headers.extend(response_headers.items())
+                message["headers"] = headers
+            await send(message)
+
+        await self.app(scope, receive, send_with_security_headers)

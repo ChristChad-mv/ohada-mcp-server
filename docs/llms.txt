@@ -1,0 +1,62 @@
+# OHADA MCP
+
+> Serveur MCP public en lecture seule pour rechercher et citer le droit OHADA et le SYSCOHADA.
+
+- Documentation: https://christchad-mv.github.io/ohada-mcp-server/
+- Endpoint MCP: https://ohada-mcp-oa42gsj75q-ew.a.run.app/mcp
+- Transport: Streamable HTTP
+- Code source: https://github.com/ChristChad-mv/ohada-mcp-server
+- Auteur: Christ Chad
+- Statut: initiative indépendante, sans affiliation officielle avec l'OHADA
+
+## Connexion
+
+Le chemin `/mcp` est un endpoint de protocole et non une page web. Un navigateur ordinaire peut donc recevoir une erreur indiquant que le client doit accepter `text/event-stream`. Utiliser un client compatible MCP.
+
+## Outils juridiques
+
+- `list_legal_texts`: liste les textes et codes canoniques disponibles.
+- `search_ohada_law`: découvre des articles pertinents à partir d'une question ou de concepts.
+- `get_article`: récupère le texte complet, la hiérarchie, la version et la source d'un article exact.
+- `get_articles`: récupère 2 à 5 articles exacts en un seul appel.
+- `get_act`: retourne les métadonnées générales d'un Acte uniforme.
+- `get_version`: retourne la version actuellement indexée d'un texte.
+- `get_provision_at_date`: contrôle l'applicabilité de la version indexée d'un article à une date.
+- `verify_citation`: vérifie et normalise une citation sans répéter le texte complet.
+
+## Outils SYSCOHADA
+
+- `search_syscohada`: découvre des passages comptables par concepts, compte ou classe.
+- `get_syscohada_passages`: récupère 1 à 5 passages complets à partir de leurs identifiants.
+- `get_syscohada_account`: récupère tous les passages indexés d'un compte exact.
+
+## Parcours recommandé
+
+1. Si la référence exacte est connue, appeler directement `get_article`, `get_articles` ou `get_syscohada_account`.
+2. Sinon, rechercher avec `search_ohada_law` ou `search_syscohada`.
+3. Récupérer le contenu complet des résultats retenus avant de rédiger la réponse.
+4. Citer le code du texte, la référence de l'article ou du compte, la version et la source officielle retournée.
+5. Ne pas appeler `verify_citation` après une récupération exacte réussie de la même référence.
+6. Ne jamais inventer une disposition absente ; signaler explicitement les références introuvables.
+
+## Couverture et limites
+
+- 13 textes juridiques OHADA et la publication officielle SYSCOHADA sont indexés.
+- La jurisprudence CCJA et nationale ainsi que le guide d'application SYSCOHADA ne sont pas encore disponibles.
+- L'historique exhaustif de toutes les anciennes versions n'est pas encore indexé.
+- Les résultats sont une aide à la recherche documentaire et non un conseil juridique.
+- Le serveur ne conserve pas les questions ni les arguments des outils dans une base applicative.
+
+## Documentation détaillée
+
+- Démarrage: https://christchad-mv.github.io/ohada-mcp-server/quickstart/
+- Connexion à Claude: https://christchad-mv.github.io/ohada-mcp-server/integrations/claude/
+- Choix des outils: https://christchad-mv.github.io/ohada-mcp-server/tools/
+- Outils juridiques: https://christchad-mv.github.io/ohada-mcp-server/tools/legal/
+- Outils SYSCOHADA: https://christchad-mv.github.io/ohada-mcp-server/tools/syscohada/
+- Enchaînements recommandés: https://christchad-mv.github.io/ohada-mcp-server/workflows/
+- Textes couverts: https://christchad-mv.github.io/ohada-mcp-server/corpus/
+- Formats de réponse: https://christchad-mv.github.io/ohada-mcp-server/responses/
+- Limites et erreurs: https://christchad-mv.github.io/ohada-mcp-server/limits/
+- Confidentialité: https://christchad-mv.github.io/ohada-mcp-server/privacy/
+- Sécurité: https://christchad-mv.github.io/ohada-mcp-server/security/

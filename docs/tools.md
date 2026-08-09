@@ -1,39 +1,41 @@
-# Référence des outils
+# Choisir un outil
 
-## `search_ohada_law`
+OHADA MCP expose **11 outils en lecture seule**. Cette page sert de carte d'orientation ; les pages suivantes documentent chaque paramètre et chaque format de réponse.
 
-Recherche textuelle de découverte dans les textes indexés. La réponse contient des références et des extraits courts (600 caractères par défaut), pas le texte complet. Une disposition retenue doit ensuite être récupérée avec `get_article` ou `get_articles`.
+## Droit OHADA
 
-| Argument | Type | Description |
-|---|---|---|
-| `query` | string | Termes ou question en français |
-| `max_results` | integer | 1 à 10, valeur par défaut 5 |
-| `act_filter` | string ou null | Code canonique, par exemple `AUSCGIE` |
+| Outil | Quand l'utiliser |
+|---|---|
+| [`search_ohada_law`](tools/legal.md#search_ohada_law) | Découvrir des dispositions lorsqu'aucune référence exacte n'est connue |
+| [`get_article`](tools/legal.md#get_article) | Récupérer un article exact avec texte, hiérarchie, version et source |
+| [`get_articles`](tools/legal.md#get_articles) | Récupérer 2 à 5 articles exacts en un appel |
+| [`get_act`](tools/legal.md#get_act) | Lire les métadonnées générales d'un texte |
+| [`list_legal_texts`](tools/legal.md#list_legal_texts) | Connaître les textes couverts et leurs codes |
+| [`get_version`](tools/legal.md#get_version) | Identifier la version actuellement indexée |
+| [`get_provision_at_date`](tools/legal.md#get_provision_at_date) | Contrôler l'applicabilité de cette version à une date |
+| [`verify_citation`](tools/legal.md#verify_citation) | Vérifier formellement une citation fournie |
 
-## `get_article`
+## SYSCOHADA
 
-Retourne le texte, la hiérarchie, la version indexée, la date d'effet et la source officielle d'un article.
+| Outil | Quand l'utiliser |
+|---|---|
+| [`search_syscohada`](tools/syscohada.md#search_syscohada) | Découvrir des passages comptables par concepts |
+| [`get_syscohada_passages`](tools/syscohada.md#get_syscohada_passages) | Récupérer 1 à 5 passages complets découverts par la recherche |
+| [`get_syscohada_account`](tools/syscohada.md#get_syscohada_account) | Obtenir directement tous les passages d'un compte exact |
 
-## `get_articles`
+## Règle de sélection
 
-Retourne les textes complets de 2 à 5 articles exacts en un seul appel. Cet outil réduit les allers-retours lorsqu'une réponse dépend de plusieurs dispositions. Une erreur sur une référence n'empêche pas le retour des autres articles valides.
+```text
+Référence exacte connue ?
+├─ Oui, un article                    → get_article
+├─ Oui, plusieurs articles            → get_articles
+├─ Oui, un compte SYSCOHADA            → get_syscohada_account
+├─ Non, question juridique             → search_ohada_law puis récupération
+└─ Non, question comptable             → search_syscohada puis récupération
+```
 
-## `get_act`
+!!! tip "Éviter les appels inutiles"
+    Un `get_article` réussi établit déjà l'existence de la référence et fournit son texte. Il est inutile d'appeler ensuite `verify_citation` pour la même citation.
 
-Retourne les métadonnées du texte correspondant à un code canonique.
-
-## `list_legal_texts`
-
-Retourne un catalogue compact des textes actuellement couverts. Utiliser `get_act` pour les métadonnées détaillées d'un texte.
-
-## `get_version`
-
-Retourne les métadonnées de la version actuellement indexée. Cet outil ne constitue pas encore un historique exhaustif des versions antérieures.
-
-## `get_provision_at_date`
-
-Compare une date ISO `YYYY-MM-DD` avec la période d'effet de la version indexée. La réponse est compacte et ne répète pas l'article. Il ne reconstitue pas encore un ancien libellé remplacé.
-
-## `verify_citation`
-
-Reconnaît les citations contenant un code canonique, comme `Article 326 AUSCGIE`, ainsi que certains intitulés officiels contrôlés. La réponse confirme et normalise la référence sans renvoyer une seconde fois le texte complet. Pour une question juridique de fond, utiliser directement `get_article`.
+[Outils juridiques](tools/legal.md){ .md-button .md-button--primary }
+[Outils SYSCOHADA](tools/syscohada.md){ .md-button }

@@ -3,6 +3,7 @@
 import sqlite3
 
 import pytest
+from ohada_mcp.accounting_api import syscohada_client
 from ohada_mcp.client import corpus_client
 
 
@@ -40,6 +41,51 @@ def isolated_test_corpus(tmp_path, monkeypatch):
         [
             ("audcg", "AUDCG-2010_fr.pdf"),
             ("auscgie", "AUSCGIE-2014_fr.pdf"),
+            ("syscohada", "audcif_jo-ohada-15-02-2017.pdf"),
+        ],
+    )
+    connection.executemany(
+        """
+        INSERT INTO chunks(
+            id, document_id, hierarchy_path, text_content,
+            metadata_json, visibility
+        ) VALUES (?, ?, ?, ?, ?, 'public')
+        """,
+        [
+            (
+                100,
+                "syscohada",
+                "Classe 1 > Compte 14 — Subventions d'investissement > Commentaires",
+                (
+                    "[Compte 14] Le compte 14 enregistre les subventions "
+                    "d'investissement accordées à l'entité."
+                ),
+                (
+                    '{"document_type":"syscohada","authority_level":'
+                    '"official_normative_and_technical","page_start":298,'
+                    '"page_end":298,"class_code":"1","class_label":"Classe 1",'
+                    '"account_code":"14","account_label":"Subventions '
+                    'd\'investissement","account_subsection":"Commentaires",'
+                    '"is_table":false}'
+                ),
+            ),
+            (
+                101,
+                "syscohada",
+                "Classe 1 > Compte 14 — Subventions d'investissement > Fonctionnement",
+                (
+                    "[Compte 14] Le compte 14 est crédité du montant de la "
+                    "subvention acquise par le débit du compte approprié."
+                ),
+                (
+                    '{"document_type":"syscohada","authority_level":'
+                    '"official_normative_and_technical","page_start":299,'
+                    '"page_end":299,"class_code":"1","class_label":"Classe 1",'
+                    '"account_code":"14","account_label":"Subventions '
+                    'd\'investissement","account_subsection":"Fonctionnement",'
+                    '"is_table":false}'
+                ),
+            ),
         ],
     )
     connection.executemany(
@@ -82,4 +128,5 @@ def isolated_test_corpus(tmp_path, monkeypatch):
     connection.close()
 
     monkeypatch.setattr(corpus_client, "db_path", db_path)
+    monkeypatch.setattr(syscohada_client, "db_path", db_path)
     yield db_path

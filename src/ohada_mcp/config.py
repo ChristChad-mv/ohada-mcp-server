@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     PORT: int = 8080
     MCP_PATH: str = "/mcp"
     OHADA_DB_PATH: Path = Path("ohada_corpus.sqlite")
+    OHADA_SYSCOHADA_DB_PATH: Path = Path("syscohada.sqlite")
 
     # Production transport protection. Values can be supplied as JSON arrays or
     # comma-separated environment variables.
@@ -36,9 +37,13 @@ class Settings(BaseSettings):
     RATE_LIMIT_REQUESTS: int = 120
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     RATE_LIMIT_MAX_CLIENTS: int = 10_000
+    TRUST_PROXY_HEADERS: bool = False
+    TRUSTED_PROXY_HOPS: int = 1
 
     MAX_SEARCH_RESULTS: int = 10
     MAX_QUERY_LENGTH: int = 1_000
+    MAX_QUERY_TERMS: int = 32
+    MAX_CITATION_LENGTH: int = 500
     SEARCH_SNIPPET_LENGTH: int = 600
 
     @field_validator("MCP_PATH")
@@ -59,6 +64,24 @@ class Settings(BaseSettings):
 
                 return json.loads(value)
             return [item.strip() for item in value.split(",") if item.strip()]
+        return value
+
+    @field_validator(
+        "MAX_REQUEST_BODY_SIZE",
+        "RATE_LIMIT_REQUESTS",
+        "RATE_LIMIT_WINDOW_SECONDS",
+        "RATE_LIMIT_MAX_CLIENTS",
+        "TRUSTED_PROXY_HOPS",
+        "MAX_SEARCH_RESULTS",
+        "MAX_QUERY_LENGTH",
+        "MAX_QUERY_TERMS",
+        "MAX_CITATION_LENGTH",
+        "SEARCH_SNIPPET_LENGTH",
+    )
+    @classmethod
+    def validate_positive_limits(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError("Security and input limits must be positive integers")
         return value
 
     model_config = SettingsConfigDict(
