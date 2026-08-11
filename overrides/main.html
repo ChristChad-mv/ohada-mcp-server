@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {% set page_description = page.meta.description if page and page.meta and page.meta.description else config.site_description %}
+  {% set page_title = page.meta.title if page and page.meta and page.meta.title else (page.title if page else config.site_name) %}
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="author" content="{{ config.site_author }}">
+  <meta name="description" content="{{ page_description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
+  <meta property="og:url" content="{{ config.site_url }}{{ page.url if page else '' }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description }}">
+  <link rel="alternate" type="text/plain" href="{{ config.site_url }}llms.txt" title="OHADA MCP Server - contenu pour assistants IA">
+
+  {% if page and page.is_homepage %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://christchad-mv.github.io/ohada-mcp-server/#website",
+        "url": "https://christchad-mv.github.io/ohada-mcp-server/",
+        "name": "OHADA MCP Server",
+        "description": "Serveur MCP public pour rechercher, récupérer et citer le droit OHADA et le SYSCOHADA depuis des assistants IA et agents compatibles Model Context Protocol.",
+        "inLanguage": "fr"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://christchad-mv.github.io/ohada-mcp-server/#software",
+        "name": "OHADA MCP Server",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "LegalTech",
+        "operatingSystem": "Tout client compatible Model Context Protocol (MCP)",
+        "url": "https://christchad-mv.github.io/ohada-mcp-server/",
+        "codeRepository": "https://github.com/ChristChad-mv/ohada-mcp-server",
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/license/mit",
+        "description": "Infrastructure juridique ouverte permettant aux assistants IA et applications LegalTech de rechercher des dispositions OHADA, récupérer le texte intégral d'articles, vérifier des citations et consulter le SYSCOHADA.",
+        "author": {
+          "@type": "Person",
+          "name": "Christ Chadrak Mvoungou",
+          "url": "https://github.com/ChristChad-mv"
+        }
+      }
+    ]
+  }
+  </script>
+  {% endif %}
+{% endblock %}
