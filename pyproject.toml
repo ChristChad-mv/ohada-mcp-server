@@ -1,31 +1,15 @@
 [project]
 name = "ohada-mcp"
 version = "1.0.0"
-description = "OHADA MCP Server — open Model Context Protocol infrastructure for OHADA law and SYSCOHADA"
+description = "OHADA MCP — Independent Open Legal Infrastructure for OHADA Law"
 readme = "README.md"
 requires-python = ">=3.10"
-authors = [
-    { name = "Christ Chadrak Mvoungou" },
-]
-keywords = [
-    "OHADA",
-    "SYSCOHADA",
-    "MCP",
-    "Model Context Protocol",
-    "legaltech",
-    "legal AI",
-    "African business law",
-]
 dependencies = [
     "mcp>=1.28.1,<2.0.0",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
     "httpx>=0.25.0",
 ]
-
-[project.urls]
-Documentation = "https://christchad-mv.github.io/ohada-mcp-server/"
-Repository = "https://github.com/ChristChad-mv/ohada-mcp-server"
 
 [project.scripts]
 ohada-mcp = "ohada_mcp.server:main"
