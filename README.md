@@ -1,33 +1,47 @@
-# OHADA MCP
+# OHADA MCP Server — Droit OHADA & SYSCOHADA pour assistants IA
 
-Le serveur MCP public de recherche juridique OHADA.
+> Serveur **Model Context Protocol (MCP)** public et open source pour rechercher, récupérer et citer le droit OHADA et le SYSCOHADA depuis Claude, Gemini, des agents IA et des applications LegalTech.
 
-OHADA MCP permet à Claude, Gemini et aux clients compatibles MCP de rechercher les textes OHADA, de récupérer un article complet, de vérifier une citation et de consulter le SYSCOHADA.
+**Documentation :** https://christchad-mv.github.io/ohada-mcp-server/  
+**Endpoint MCP :** `https://ohada-mcp-oa42gsj75q-ew.a.run.app/mcp`  
+**Transport :** Streamable HTTP  
+**Auteur :** Christ Chadrak Mvoungou  
+**Statut :** initiative indépendante, sans affiliation officielle avec l'OHADA
 
-> Projet indépendant créé par Christ Chad. Il n'est pas encore affilié, approuvé ou exploité officiellement par l'OHADA.
+## Pourquoi OHADA MCP Server ?
 
-## Connexion
+Les modèles de langage peuvent produire des réponses juridiques sans source fiable lorsqu'ils travaillent uniquement à partir de leur mémoire. OHADA MCP Server fournit au contraire des **outils de recherche et de récupération documentaire** permettant à un assistant IA de retrouver une disposition OHADA, récupérer son texte complet, sa version et ses métadonnées de source avant de générer une réponse.
 
-URL du serveur :
+Le serveur couvre notamment :
+
+- recherche dans **13 textes juridiques OHADA** ;
+- récupération du texte intégral d'un article exact ;
+- récupération groupée de plusieurs articles ;
+- vérification et normalisation de citations ;
+- contrôle de la version indexée à une date ;
+- recherche dans le **SYSCOHADA** ;
+- récupération de passages et comptes SYSCOHADA avec leur contexte.
+
+## Connexion rapide
 
 ```text
 https://ohada-mcp-oa42gsj75q-ew.a.run.app/mcp
 ```
 
+Le chemin `/mcp` est un endpoint de protocole, pas une page web. Un navigateur ordinaire peut donc recevoir une erreur indiquant que le client doit accepter `text/event-stream`. Utilisez un client compatible MCP.
+
 ### Claude
 
-Avec Claude Pro, Max, Team ou Enterprise :
+Avec une version de Claude prenant en charge les connecteurs MCP personnalisés :
 
-1. Ouvrez **Settings → Connectors** dans Claude ou Claude Desktop.
+1. Ouvrez **Settings → Connectors**.
 2. Cliquez sur **Add custom connector**.
 3. Nommez-le `OHADA MCP` et collez l'URL ci-dessus.
-4. Activez les outils dans le menu **Search and tools** d'une conversation.
+4. Activez les outils dans la conversation.
 
-[Guide officiel des connecteurs personnalisés Claude](https://support.anthropic.com/en/articles/11175166-about-custom-integrations-using-remote-mcp)
+Guide détaillé : https://christchad-mv.github.io/ohada-mcp-server/integrations/claude/
 
 ### Autres clients MCP
-
-Utilisez cette configuration lorsque votre client demande une URL de serveur MCP :
 
 ```json
 {
@@ -39,31 +53,51 @@ Utilisez cette configuration lorsque votre client demande une URL de serveur MCP
 }
 ```
 
-## Ce que le serveur fournit
+## Les 11 outils disponibles
 
-- recherche de dispositions pertinentes ;
-- texte intégral d'un article et de son contexte hiérarchique ;
-- récupération groupée de plusieurs articles ;
-- contrôle d'une citation et de la version indexée ;
-- recherche dans le SYSCOHADA et récupération de passages ou comptes complets avec leurs pages.
+### Droit OHADA
 
-Le corpus couvre actuellement 13 textes OHADA ainsi que la publication officielle SYSCOHADA. La jurisprudence CCJA et nationale n'est pas encore incluse.
+- `list_legal_texts` — liste les textes et codes canoniques disponibles.
+- `search_ohada_law` — découvre les dispositions pertinentes à partir d'une question ou de concepts.
+- `get_article` — récupère le texte complet, la hiérarchie, la version et la source d'un article exact.
+- `get_articles` — récupère 2 à 5 articles exacts en un seul appel.
+- `get_act` — retourne les métadonnées générales d'un Acte uniforme.
+- `get_version` — retourne la version actuellement indexée d'un texte.
+- `get_provision_at_date` — contrôle l'applicabilité de la version indexée à une date.
+- `verify_citation` — vérifie et normalise une citation.
 
-## Confidentialité
+### SYSCOHADA
 
-OHADA MCP ne conserve ni le texte des questions ni les recherches des utilisateurs. N'envoyez pas de dossier client, données personnelles ou informations confidentielles à ce serveur public. Claude, Gemini ou tout autre assistant connecté applique sa propre politique de confidentialité.
+- `search_syscohada` — découvre des passages comptables par concepts, compte ou classe.
+- `get_syscohada_passages` — récupère 1 à 5 passages complets.
+- `get_syscohada_account` — récupère les passages indexés d'un compte exact.
+
+## Parcours recommandé
+
+1. Si la référence exacte est connue, appelez directement `get_article`, `get_articles` ou `get_syscohada_account`.
+2. Sinon, recherchez avec `search_ohada_law` ou `search_syscohada`.
+3. Récupérez le contenu complet des résultats retenus avant de rédiger la réponse.
+4. Citez le code du texte, la référence, la version et la source retournée.
+5. Ne jamais inventer une disposition ou une jurisprudence absente du corpus.
+
+## Couverture et limites
+
+Le corpus couvre actuellement **13 textes juridiques OHADA** ainsi que la publication officielle SYSCOHADA. La jurisprudence CCJA et nationale, la doctrine privée et le guide d'application SYSCOHADA ne sont pas encore indexés.
+
+Documentation du corpus : https://christchad-mv.github.io/ohada-mcp-server/corpus/
 
 ## Documentation
 
-La documentation complète est disponible à l'adresse
-[christchad-mv.github.io/ohada-mcp-server](https://christchad-mv.github.io/ohada-mcp-server/).
+- [Vue d'ensemble](https://christchad-mv.github.io/ohada-mcp-server/)
+- [Démarrage rapide](https://christchad-mv.github.io/ohada-mcp-server/quickstart/)
+- [Connexion à Claude](https://christchad-mv.github.io/ohada-mcp-server/integrations/claude/)
+- [Référence des outils](https://christchad-mv.github.io/ohada-mcp-server/tools/)
+- [Corpus OHADA et SYSCOHADA](https://christchad-mv.github.io/ohada-mcp-server/corpus/)
+- [Questions fréquentes](https://christchad-mv.github.io/ohada-mcp-server/faq/)
+- [Confidentialité](https://christchad-mv.github.io/ohada-mcp-server/privacy/)
+- [Sécurité](https://christchad-mv.github.io/ohada-mcp-server/security/)
+- [llms.txt](https://christchad-mv.github.io/ohada-mcp-server/llms.txt)
 
-- [Démarrage rapide](docs/quickstart.md)
-- [Connexion à Claude](docs/integrations/claude.md)
-- [Référence des outils](docs/tools.md)
-- [Confidentialité](docs/privacy.md)
-- [Sécurité](docs/security.md)
+## Licence et avertissement
 
-## Licence
-
-Le code est distribué sous [licence MIT](LICENSE). OHADA MCP est un outil de recherche documentaire, pas un conseil juridique.
+Le code est distribué sous [licence MIT](LICENSE). OHADA MCP Server est un outil de recherche documentaire et **ne constitue pas un conseil juridique**.
