@@ -5,6 +5,16 @@ on:
     branches: [master]
     paths:
       - "docs/**"
+      - "overrides/**"
+      - "mkdocs.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    branches: [master]
+    paths:
+      - "docs/**"
+      - "overrides/**"
       - "mkdocs.yml"
       - "pyproject.toml"
       - "uv.lock"
@@ -15,8 +25,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -30,12 +40,22 @@ jobs:
         run: uv sync --locked --extra docs
       - name: Build documentation
         run: uv run mkdocs build --strict
+      - name: Verify SEO artifacts
+        run: |
+          test -f site/sitemap.xml
+          test -f site/robots.txt
+          test -f site/llms.txt
+          grep -q "application/ld+json" site/index.html
+          grep -q "OAI-SearchBot" site/robots.txt
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        if: github.event_name != 'pull_request'
         with:
           path: site
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
