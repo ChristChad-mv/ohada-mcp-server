@@ -1,8 +1,13 @@
-# Démarrage rapide
+---
+title: Connecter OHADA MCP Server à Claude, Gemini ou un client MCP
+description: Guide de démarrage rapide pour connecter OHADA MCP Server à Claude ou à un client Model Context Protocol et interroger le droit OHADA et le SYSCOHADA en quelques minutes.
+---
 
-Cette page permet de vérifier OHADA MCP en moins de cinq minutes.
+# Connecter OHADA MCP Server en moins de cinq minutes
 
-## 1. Copier l'endpoint
+Ce guide permet de connecter **OHADA MCP Server** à un assistant IA ou à une application compatible **Model Context Protocol (MCP)**, puis de tester une recherche en droit OHADA ou dans le SYSCOHADA.
+
+## 1. Copier l'endpoint MCP public
 
 ```text
 https://ohada-mcp-oa42gsj75q-ew.a.run.app/mcp
@@ -11,7 +16,7 @@ https://ohada-mcp-oa42gsj75q-ew.a.run.app/mcp
 !!! note "Ce n'est pas une page web"
     L'endpoint `/mcp` utilise le transport **Streamable HTTP**. Si vous l'ouvrez directement dans un navigateur, une erreur indiquant que le client doit accepter `text/event-stream` est normale. Utilisez un client MCP. L'état du service est consultable sur [`/health`](https://ohada-mcp-oa42gsj75q-ew.a.run.app/health).
 
-## 2. Choisir votre parcours
+## 2. Choisir votre client MCP
 
 === "Claude"
 
@@ -49,7 +54,7 @@ https://ohada-mcp-oa42gsj75q-ew.a.run.app/mcp
 
     Le nom exact des champs dépend du client. Le transport requis est **Streamable HTTP**.
 
-## 3. Poser une question juridique
+## 3. Poser une question en droit OHADA
 
 Essayez :
 
@@ -75,14 +80,15 @@ Comme le compte exact est connu, le parcours recommandé est :
 get_syscohada_account → réponse fondée sur les passages complets et leurs pages
 ```
 
-## 5. Vérifier le résultat
+## 5. Vérifier la qualité de la réponse
 
 Une réponse bien fondée doit comporter :
 
 - la réponse directe à la question ;
 - le code exact du texte, par exemple `AUSCGIE` ;
 - la référence de l'article ou la page SYSCOHADA ;
+- la version et la source lorsqu'elles sont retournées ;
 - une distinction entre le contenu du texte et ce qui nécessiterait jurisprudence ou interprétation.
 
 [Comprendre les enchaînements d'outils](workflows.md){ .md-button .md-button--primary }
-[Résoudre une erreur](limits.md){ .md-button }
+[Voir les 11 outils MCP](tools.md){ .md-button }
