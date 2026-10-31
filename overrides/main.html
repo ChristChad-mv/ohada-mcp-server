@@ -18,7 +18,7 @@
   <meta name="twitter:description" content="{{ page_description }}">
   <link rel="alternate" type="text/plain" href="{{ config.site_url }}llms.txt" title="OHADA MCP Server - contenu pour assistants IA">
 
-  {% if page and page.is_homepage %}
+  {% if page and (page.url == '' or page.url == 'index.html' or page.is_homepage) %}
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
