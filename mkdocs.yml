@@ -1,13 +1,14 @@
-site_name: OHADA MCP
+site_name: OHADA MCP Server
 site_url: https://christchad-mv.github.io/ohada-mcp-server/
-site_description: Documentation du serveur MCP public pour le droit OHADA et le SYSCOHADA
-site_author: Christ Chad
+site_description: Serveur MCP public et documentation technique pour rechercher, citer et exploiter le droit OHADA et le SYSCOHADA avec Claude, Gemini et des agents IA compatibles Model Context Protocol.
+site_author: Christ Chadrak Mvoungou
 repo_url: https://github.com/ChristChad-mv/ohada-mcp-server
 repo_name: ChristChad-mv/ohada-mcp-server
 edit_uri: edit/master/docs/
 
 theme:
   name: material
+  custom_dir: overrides
   language: fr
   icon:
     logo: material/scale-balance
@@ -90,4 +91,10 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
 
-copyright: Projet indépendant créé par Christ Chad · Licence MIT
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ChristChad-mv/ohada-mcp-server
+      name: Code source OHADA MCP Server sur GitHub
+
+copyright: Projet indépendant créé par Christ Chadrak Mvoungou · Licence MIT
